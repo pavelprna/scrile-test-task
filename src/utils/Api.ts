@@ -25,7 +25,7 @@ class Api {
   }
 
   getAvatars() {
-    return this._checkResponse('/images')
+    return this._checkResponse('/photos')
   }
 }
 
