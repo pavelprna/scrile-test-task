@@ -16,12 +16,6 @@ const App: FC = () => {
   const [isLoaded, setIsLoaded] = useState<boolean>(true)
   const [cursor, setCursor] = useState<number>(0)
 
-  // useEffect(() => {
-  //   if (searchValue.length === 0 && users[0]) {
-  //     setUsers([])
-  //   }
-  // }, [searchValue.length, users])
-
   const setAvatars = ({
     users,
     avatars,
