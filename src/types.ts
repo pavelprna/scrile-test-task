@@ -4,3 +4,8 @@ export type User = {
   username: string
   avatar?: string
 }
+
+export type Photo = {
+  id: number
+  thumbnailUrl: string
+}

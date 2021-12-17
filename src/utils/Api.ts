@@ -1,4 +1,4 @@
-import { User } from '../types'
+import { User, Photo } from '../types'
 
 class Api {
   baseUrl: string
@@ -24,7 +24,7 @@ class Api {
     return this._checkResponse('/users')
   }
 
-  getAvatars() {
+  getAvatars(): Promise<Photo[]> {
     return this._checkResponse('/photos')
   }
 }

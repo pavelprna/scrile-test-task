@@ -8,7 +8,7 @@ type UserCardProps = {
 
 export const UserCard: FC<UserCardProps> = ({ user }) => {
   return (
-    <article className="user-list__item card">
+    <article className="card">
       <img alt={user.name} srcSet={user.avatar} className="card__avatar" />
       <div className="card__info">
         <p className="card__name">{user.name}</p>

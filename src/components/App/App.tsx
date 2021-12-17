@@ -1,5 +1,11 @@
-import { ChangeEventHandler, FC, useEffect, useState } from 'react'
-import { User } from '../../types'
+import {
+  ChangeEventHandler,
+  FC,
+  KeyboardEventHandler,
+  useEffect,
+  useState,
+} from 'react'
+import { User, Photo } from '../../types'
 import { api } from '../../utils/Api'
 import SearchForm from '../SearchForm/SearchForm'
 import { UserList } from '../UserList/UserList'
@@ -8,19 +14,20 @@ const App: FC = () => {
   const [searchValue, setSearchValue] = useState<string>('')
   const [users, setUsers] = useState<User[]>([])
   const [isLoaded, setIsLoaded] = useState<boolean>(true)
+  const [cursor, setCursor] = useState<number>(0)
 
-  useEffect(() => {
-    if (searchValue.length === 0 && users[0]) {
-      setUsers([])
-    }
-  }, [searchValue.length, users])
+  // useEffect(() => {
+  //   if (searchValue.length === 0 && users[0]) {
+  //     setUsers([])
+  //   }
+  // }, [searchValue.length, users])
 
   const setAvatars = ({
     users,
     avatars,
   }: {
     users: User[]
-    avatars: any[]
+    avatars: Photo[]
   }) => {
     users.map((user) => {
       for (let i = 0; i < avatars.length; i++) {
@@ -35,6 +42,7 @@ const App: FC = () => {
 
   const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setSearchValue(e.target.value)
+    setCursor(0)
     setIsLoaded(false)
     Promise.all([api.getAllUsers(), api.getAvatars()])
       .then(([users, avatars]) => {
@@ -56,17 +64,37 @@ const App: FC = () => {
     setUsers([])
   }
 
+  const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
+    const { key } = e
+    if (key === 'ArrowDown' && cursor < users.length) {
+      e.preventDefault()
+      setCursor((c) => ++c)
+    } else if (key === 'ArrowUp' && cursor > 0) {
+      e.preventDefault()
+      setCursor((c) => --c)
+    } else if (key === 'ArrowLeft' && cursor !== 0) {
+      e.preventDefault()
+      setCursor(0)
+    }
+  }
+
   return (
     <>
       <header className="header">
-        <SearchForm value={searchValue} onChange={handleChange} />
+        <SearchForm
+          value={searchValue}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+        />
       </header>
       <main className="main">
         {isLoaded
-          ? users[0] && (
+          ? users[0] &&
+            searchValue && (
               <UserList
                 users={users}
                 onClick={(user) => handleClickByUser(user)}
+                cursor={cursor}
               />
             )
           : 'loaded...'}
