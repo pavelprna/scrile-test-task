@@ -9,12 +9,11 @@ const App: FC = () => {
   const [users, setUsers] = useState<User[]>([])
   const [isLoaded, setIsLoaded] = useState<boolean>(true)
 
-  useState(() => {
+  useEffect(() => {
     if (searchValue.length === 0 && users[0]) {
       setUsers([])
     }
-    console.log(searchValue.length, users.length)
-  })
+  }, [searchValue.length, users])
 
   const setAvatars = ({
     users,
@@ -37,13 +36,24 @@ const App: FC = () => {
   const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setSearchValue(e.target.value)
     setIsLoaded(false)
-    Promise.all([api.getAllUsers(), api.getAvatars()]).then(
-      ([users, avatars]) => {
+    Promise.all([api.getAllUsers(), api.getAvatars()])
+      .then(([users, avatars]) => {
         setAvatars({ users, avatars })
         setIsLoaded(true)
-        setUsers(users)
-      }
-    )
+        return users
+      })
+      .then((users) => {
+        setUsers(
+          users.filter((user) =>
+            user.name.toLowerCase().includes(e.target.value.toLowerCase())
+          )
+        )
+      })
+  }
+
+  const handleClickByUser = (user: string) => {
+    setSearchValue(user)
+    setUsers([])
   }
 
   return (
@@ -52,7 +62,14 @@ const App: FC = () => {
         <SearchForm value={searchValue} onChange={handleChange} />
       </header>
       <main className="main">
-        {isLoaded ? users[0] && <UserList users={users} /> : 'loaded...'}
+        {isLoaded
+          ? users[0] && (
+              <UserList
+                users={users}
+                onClick={(user) => handleClickByUser(user)}
+              />
+            )
+          : 'loaded...'}
       </main>
     </>
   )
