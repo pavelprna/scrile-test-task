@@ -10,6 +10,8 @@ type UserListProps = {
 }
 
 export const UserList: FC<UserListProps> = ({ users, onClick, cursor }) => {
+  if (!users.length) return null
+
   return (
     <ul className="user-list">
       {users.map((user, i) => (

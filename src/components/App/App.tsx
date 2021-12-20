@@ -1,14 +1,10 @@
-import {
-  ChangeEventHandler,
-  FC,
-  KeyboardEventHandler,
-  useEffect,
-  useState,
-} from 'react'
+import { ChangeEventHandler, FC, KeyboardEventHandler, useState } from 'react'
 import { User, Photo } from '../../types'
 import { api } from '../../utils/Api'
+import { Loader } from '../Loader/Loader'
 import SearchForm from '../SearchForm/SearchForm'
 import { UserList } from '../UserList/UserList'
+import './App.css'
 
 const App: FC = () => {
   const [searchValue, setSearchValue] = useState<string>('')
@@ -69,6 +65,9 @@ const App: FC = () => {
     } else if (key === 'ArrowLeft' && cursor !== 0) {
       e.preventDefault()
       setCursor(0)
+    } else if (key === 'Enter') {
+      e.preventDefault()
+      handleClickByUser(users[cursor - 1].name)
     }
   }
 
@@ -82,16 +81,17 @@ const App: FC = () => {
         />
       </header>
       <main className="main">
-        {isLoaded
-          ? users[0] &&
-            searchValue && (
-              <UserList
-                users={users}
-                onClick={(user) => handleClickByUser(user)}
-                cursor={cursor}
-              />
-            )
-          : 'loaded...'}
+        {isLoaded ? (
+          searchValue && (
+            <UserList
+              users={users}
+              onClick={(user) => handleClickByUser(user)}
+              cursor={cursor}
+            />
+          )
+        ) : (
+          <Loader />
+        )}
       </main>
     </>
   )
